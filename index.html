@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <script type="module" src='main.js'></script>
+    <title>Weather</title>
+</head>
+
+<body>
+    <h1 id="mainHeader">Počasie</h1>
+    <h2 id="timeUp">Horny</h2>
+    <h2 id="timeDown">Dolny</h2>
+    <img id="gif">
+    <p id="news"> Zrodila sa Zem</p>
+
+    <form id="exerciseForm">
+        <label for="function-name">Funkcia</label>
+        <input type="text" id="function-name">
+        <button type="submit">Vykonaj funkciu</button>
+    </form>
+    <p id="exercise"></p><br>
+
+    <form id="colorForm">
+        <label for="element-name">Element:</label>
+        <input type="text" id="element-name">
+        <button type="submit"> Vyfarbi elementy</button>
+    </form>
+    <br>
+    <form id="weatherForm">
+        <label for="city">Mesto:</label>
+        <input type="text" id="city" name="city">
+        <label for="country">Krajina:</label>
+        <input type="text" id="country" name="country">
+        <button type="submit">Aktuálne počasie</button>        
+    </form>
+    <br>
+    <div id="cards-row" class="row"></div>
+</body>
+
+</html>
