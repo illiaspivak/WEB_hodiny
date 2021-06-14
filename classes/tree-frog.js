@@ -1,5 +1,7 @@
 import { Animal } from './animal.js'
 
+
+
 export class TreeFrog extends Animal {
 
     constructor(name, weight, color, pohlavie, contentScriptTabId) {
@@ -19,6 +21,7 @@ export class TreeFrog extends Animal {
         this.weatherForm.addEventListener("submit", (e) => {
             e.preventDefault()
             this.getActualWeatherForCity()
+            .then(result => document.getElementById("lastCity").innerHTML = result)
         })
 
         this.colorForm.addEventListener("submit", (e) => {
@@ -85,32 +88,34 @@ export class TreeFrog extends Animal {
         }
     }
 
+
     getActualWeatherForCity() {
         return new Promise((resolve, reject) => {
-        const city = document.getElementById("city").value
-        const country = document.getElementById("country").value
-        let countryAbb;
+            const city = document.getElementById("city").value
+            const country = document.getElementById("country").value
+            let countryAbb;
 
-        fetch('https://api.opencagedata.com/geocode/v1/json?q=' + city + '%2C%20' + country + '&key=' + this.geoKey)
-            .then(resp => this.respToJSON(resp))
-            .then(json => {
-                if (json.results && json.results.length > 0) {//city found
-                    const lat = json.results[0].geometry.lat
-                    const lng = json.results[0].geometry.lng
-                    countryAbb = json.results[0].components["ISO_3166-1_alpha-3"]
-                    return fetch('https://api.openweathermap.org/data/2.5/onecall?lat=' + lat + '&lon=' + lng
-                        + '&appid=' + this.weatherKey + '&units=metric')
-                }
-                reject(new Error("No city found"))
-            })
-            .then(resp => this.respToJSON(resp))
-            .then(json => {
-                const location = city + ', ' + countryAbb
-                this.createCard(location, json)
-            })
-            .catch(error => {
-                console.log(error)
-            });
+            fetch('https://api.opencagedata.com/geocode/v1/json?q=' + city + '%2C%20' + country + '&key=' + this.geoKey)
+                .then(resp => this.respToJSON(resp))
+                .then(json => {
+                    if (json.results && json.results.length > 0) {//city found
+                        const lat = json.results[0].geometry.lat
+                        const lng = json.results[0].geometry.lng
+                        countryAbb = json.results[0].components["ISO_3166-1_alpha-3"]
+                        return fetch('https://api.openweathermap.org/data/2.5/onecall?lat=' + lat + '&lon=' + lng
+                            + '&appid=' + this.weatherKey + '&units=metric')
+                    }
+                    reject(new Error("No city found"))
+                })
+                .then(resp => this.respToJSON(resp))
+                .then(json => {
+                    const location = city + ', ' + countryAbb
+                    this.createCard(location, json)
+                    resolve(location)
+                })
+                .catch(error => {
+                    console.log(error)
+                });
         });
     }
 
@@ -158,11 +163,11 @@ export class TreeFrog extends Animal {
         )
     }
 
-    sendFunctionNameMessage(){
+    sendFunctionNameMessage() {
         const functionName = document.getElementById("function-name").value
         chrome.tabs.sendMessage(
             this.contentScriptTabId,
-            {type: 'function-name', functionName: functionName},
+            { type: 'function-name', functionName: functionName },
             (response) => {
                 document.getElementById('exercise').innerHTML = response
             }
