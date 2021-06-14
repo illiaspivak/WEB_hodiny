@@ -86,35 +86,32 @@ export class TreeFrog extends Animal {
     }
 
     getActualWeatherForCity() {
+        return new Promise((resolve, reject) => {
         const city = document.getElementById("city").value
         const country = document.getElementById("country").value
+        let countryAbb;
 
         fetch('https://api.opencagedata.com/geocode/v1/json?q=' + city + '%2C%20' + country + '&key=' + this.geoKey)
-            .then(
-                resp => this.respToJSON(resp)
-            )
+            .then(resp => this.respToJSON(resp))
             .then(json => {
-                if (json.results.length > 0) {//city found
+                if (json.results && json.results.length > 0) {//city found
                     const lat = json.results[0].geometry.lat
                     const lng = json.results[0].geometry.lng
-                    const countryAbb = json.results[0].components["ISO_3166-1_alpha-3"]
-                    fetch('https://api.openweathermap.org/data/2.5/onecall?lat=' + lat + '&lon=' + lng
+                    countryAbb = json.results[0].components["ISO_3166-1_alpha-3"]
+                    return fetch('https://api.openweathermap.org/data/2.5/onecall?lat=' + lat + '&lon=' + lng
                         + '&appid=' + this.weatherKey + '&units=metric')
-                        .then(
-                            resp => this.respToJSON(resp)
-                        )
-                        .then(json => {
-                            const location = city + ', ' + countryAbb
-                            this.createCard(location, json)
-                        })
-                        .catch(error => {
-                            console.log(error)
-                        });
                 }
+                reject(new Error("No city found"))
+            })
+            .then(resp => this.respToJSON(resp))
+            .then(json => {
+                const location = city + ', ' + countryAbb
+                this.createCard(location, json)
             })
             .catch(error => {
                 console.log(error)
             });
+        });
     }
 
     respToJSON = resp => {
